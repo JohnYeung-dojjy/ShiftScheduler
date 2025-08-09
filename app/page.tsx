@@ -90,9 +90,9 @@ export default function Home() {
       <table className="table-auto border-collapse border border-gray-300 w-full mb-8">
         <thead>
           <tr>
-            <th className="border border-gray-300 px-4 py-2">Employee</th>
+            <th className="border border-gray-300 px-4 py-2 w-32">Employee</th>
             {daysOfWeek.map((day) => (
-              <th key={day} className="border border-gray-300 px-4 py-2">
+              <th key={day} className="border border-gray-300 px-4 py-2 w-32">
                 {day}
               </th>
             ))}
@@ -101,13 +101,13 @@ export default function Home() {
         <tbody>
           {employees.map((employee) => (
             <tr key={employee}>
-              <td className="border border-gray-300 px-4 py-2 font-semibold">
+              <td className="border border-gray-300 px-4 py-2 font-semibold w-32">
                 {employee}
               </td>
               {daysOfWeek.map((day) => (
                 <td
                   key={day}
-                  className={`border border-gray-300 px-4 py-2 text-center cursor-pointer ${availability[employee][day] ? "bg-green-500" : "bg-red-500"}`}
+                  className={`border border-gray-300 px-4 py-2 text-center cursor-pointer w-32 ${availability[employee][day] ? "bg-green-500" : "bg-red-500"}`}
                   onClick={() => handleAvailabilityChange(employee, day)}
                 >
                   {availability[employee][day] ? "Available" : "Unavailable"}
@@ -123,18 +123,18 @@ export default function Home() {
       <table className="table-auto border-collapse border border-gray-300 w-full">
         <thead>
           <tr>
-            <th className="border border-gray-300 px-4 py-2">Store Location</th>
+            <th className="border border-gray-300 px-4 py-2 w-32">Store Location</th>
             {daysOfWeek.map((day) => (
-              <th key={day} className="border border-gray-300 px-4 py-2">{day}</th>
+              <th key={day} className="border border-gray-300 px-4 py-2 w-32">{day}</th>
             ))}
           </tr>
         </thead>
         <tbody>
           {storeLocations.map((location) => (
             <tr key={location}>
-              <td className="border border-gray-300 px-4 py-2 font-semibold">{location}</td>
+              <td className="border border-gray-300 px-4 py-2 font-semibold w-32">{location}</td>
               {daysOfWeek.map((day) => (
-                <td key={day} className="border border-gray-300 px-4 py-2">
+                <td key={day} className="border border-gray-300 px-4 py-2 w-32">
                   <select
                     value={schedule[location][day]}
                     onChange={(e) => handleAssignShift(location, day, e.target.value)}
