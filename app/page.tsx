@@ -223,6 +223,21 @@ export default function Home() {
                 >
                   Toggle
                 </button>
+                <button
+                  onClick={() => {
+                    if (confirm(`Are you sure you want to delete ${employee}?`)) {
+                      setEmployees((prevEmployees) => prevEmployees.filter((e) => e !== employee));
+                      setAvailability((prevAvailability) => {
+                        const updatedAvailability = { ...prevAvailability };
+                        delete updatedAvailability[employee];
+                        return updatedAvailability;
+                      });
+                    }
+                  }}
+                  className="px-1 py-0.5 bg-red-500 text-white text-sm rounded hover:bg-red-600"
+                >
+                  Delete
+                </button>
               </td>
             </tr>
           ))}
