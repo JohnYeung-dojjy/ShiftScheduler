@@ -38,7 +38,6 @@ export default function Home() {
       return acc;
     }, {} as Schedule)
   );
-  console.log(schedule);
   const [availability, setAvailability] = useState<Availability>({});
 
   useEffect(() => {
@@ -62,22 +61,6 @@ export default function Home() {
   useEffect(() => {
     localStorage.setItem("availability", JSON.stringify(availability));
   }, [availability]);
-
-  const addEmployee = (employeeName: string) => {
-    if (!employeeName || employees.includes(employeeName)) return;
-    if (employees.length >= 28) {
-      alert("Cannot add more than 28 employees.");
-      return;
-    }
-    setEmployees((prev) => [...prev, employeeName]);
-    setAvailability((prev) => ({
-      ...prev,
-      [employeeName]: daysOfWeek.reduce((dayAcc, day) => {
-        dayAcc[day] = true; // Available by default
-        return dayAcc;
-      }, {} as { [day: string]: boolean }),
-    }));
-  };
 
   const handleAssignShift = (
     location: string,
@@ -147,22 +130,12 @@ export default function Home() {
       <h1 className="text-2xl font-bold mb-4">Shift Scheduler</h1>
 
       <div className="mb-4">
-        <input
-          type="text"
-          id="new-employee"
-          placeholder="Enter employee name"
-          className="border border-gray-300 rounded px-2 py-1 mr-2"
-        />
-        <button
-          onClick={() => {
-            const input = document.getElementById("new-employee") as HTMLInputElement;
-            addEmployee(input.value);
-            input.value = "";
-          }}
-          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+        <a
+          href="/employees"
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
-          Add Employee
-        </button>
+          Manage Employees
+        </a>
       </div>
 
       {/* Availability Table */}
@@ -221,21 +194,6 @@ export default function Home() {
                   className="px-1 py-0.5 bg-yellow-500 text-white text-sm rounded hover:bg-yellow-600"
                 >
                   Toggle
-                </button>
-                <button
-                  onClick={() => {
-                    if (confirm(`Are you sure you want to delete ${employee}?`)) {
-                      setEmployees((prevEmployees) => prevEmployees.filter((e) => e !== employee));
-                      setAvailability((prevAvailability) => {
-                        const updatedAvailability = { ...prevAvailability };
-                        delete updatedAvailability[employee];
-                        return updatedAvailability;
-                      });
-                    }
-                  }}
-                  className="px-1 py-0.5 bg-red-500 text-white text-sm rounded hover:bg-red-600"
-                >
-                  Delete
                 </button>
               </td>
             </tr>
