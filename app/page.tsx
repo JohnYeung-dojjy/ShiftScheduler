@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { assignShiftsEvenly } from "./utils/assignShiftsEvenly";
+import Head from "next/head";
 
 interface Schedule {
   [location: string]: {
@@ -140,6 +141,9 @@ export default function Home() {
 
   return (
     <div className="p-8">
+      <Head>
+        <title>Shift Scheduler</title>
+      </Head>
       <h1 className="text-2xl font-bold mb-4">Shift Scheduler</h1>
 
       <div className="mb-4">
