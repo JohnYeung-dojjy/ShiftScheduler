@@ -37,6 +37,7 @@ export default function Home() {
       return acc;
     }, {} as Schedule)
   );
+  console.log(schedule);
   const [availability, setAvailability] = useState<Availability>({});
 
   useEffect(() => {
@@ -244,7 +245,6 @@ export default function Home() {
             daysOfWeek,
             storeLocations,
             availability,
-            schedule,
             setSchedule
           )
         }
