@@ -204,18 +204,20 @@ export default function Home() {
               <td className="border border-gray-300 px-4 py-2 text-center w-32">
                 <button
                   onClick={() => {
-                    setAvailability((prevAvailability) => {
-                      const updatedAvailability = {
-                        ...prevAvailability,
-                        [employee]: daysOfWeek.reduce((dayAcc, day) => {
-                          dayAcc[day] = !Object.values(prevAvailability[employee]).every(
-                            (available) => available
-                          );
-                          return dayAcc;
-                        }, {} as { [day: string]: boolean }),
-                      };
-                      return updatedAvailability;
-                    });
+                    if (confirm(`Are you sure you want to toggle availability for ${employee} for the entire week?`)) {
+                      setAvailability((prevAvailability) => {
+                        const updatedAvailability = {
+                          ...prevAvailability,
+                          [employee]: daysOfWeek.reduce((dayAcc, day) => {
+                            dayAcc[day] = !Object.values(prevAvailability[employee]).every(
+                              (available) => available
+                            );
+                            return dayAcc;
+                          }, {} as { [day: string]: boolean }),
+                        };
+                        return updatedAvailability;
+                      });
+                    }
                   }}
                   className="px-1 py-0.5 bg-yellow-500 text-white text-sm rounded hover:bg-yellow-600"
                 >
