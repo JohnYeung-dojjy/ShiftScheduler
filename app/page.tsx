@@ -183,6 +183,7 @@ export default function Home() {
                 {day}
               </th>
             ))}
+            <th className="border border-gray-300 px-4 py-2 w-32">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -200,6 +201,27 @@ export default function Home() {
                   {availability[employee]?.[day] ? "Available" : "Unavailable"}
                 </td>
               ))}
+              <td className="border border-gray-300 px-4 py-2 text-center w-32">
+                <button
+                  onClick={() => {
+                    setAvailability((prevAvailability) => {
+                      const updatedAvailability = {
+                        ...prevAvailability,
+                        [employee]: daysOfWeek.reduce((dayAcc, day) => {
+                          dayAcc[day] = !Object.values(prevAvailability[employee]).every(
+                            (available) => available
+                          );
+                          return dayAcc;
+                        }, {} as { [day: string]: boolean }),
+                      };
+                      return updatedAvailability;
+                    });
+                  }}
+                  className="px-1 py-0.5 bg-yellow-500 text-white text-sm rounded hover:bg-yellow-600"
+                >
+                  Toggle
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
