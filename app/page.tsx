@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface Schedule {
   [location: string]: {
@@ -25,8 +25,8 @@ export default function Home() {
     "Sunday",
   ];
   const storeLocations: string[] = ["Richmond", "Crystal Mall"];
-  const employees: string[] = ["Alice", "Bob", "Charlie", "David", "Eve"];
 
+  const [employees, setEmployees] = useState<string[]>([]);
   const [schedule, setSchedule] = useState<Schedule>(
     storeLocations.reduce((acc, location) => {
       acc[location] = daysOfWeek.reduce((dayAcc, day) => {
@@ -36,16 +36,41 @@ export default function Home() {
       return acc;
     }, {} as Schedule)
   );
+  const [availability, setAvailability] = useState<Availability>({});
 
-  const [availability, setAvailability] = useState<Availability>(
-    employees.reduce((acc, employee) => {
-      acc[employee] = daysOfWeek.reduce((dayAcc, day) => {
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedEmployees = localStorage.getItem("employees");
+      if (storedEmployees) {
+        setEmployees(JSON.parse(storedEmployees));
+      }
+
+      const storedAvailability = localStorage.getItem("availability");
+      if (storedAvailability) {
+        setAvailability(JSON.parse(storedAvailability));
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("employees", JSON.stringify(employees));
+  }, [employees]);
+
+  useEffect(() => {
+    localStorage.setItem("availability", JSON.stringify(availability));
+  }, [availability]);
+
+  const addEmployee = (employeeName: string) => {
+    if (!employeeName || employees.includes(employeeName)) return;
+    setEmployees((prev) => [...prev, employeeName]);
+    setAvailability((prev) => ({
+      ...prev,
+      [employeeName]: daysOfWeek.reduce((dayAcc, day) => {
         dayAcc[day] = true; // Available by default
         return dayAcc;
-      }, {} as { [day: string]: boolean });
-      return acc;
-    }, {} as Availability)
-  );
+      }, {} as { [day: string]: boolean }),
+    }));
+  };
 
   const handleAssignShift = (
     location: string,
@@ -128,12 +153,24 @@ export default function Home() {
     <div className="p-8">
       <h1 className="text-2xl font-bold mb-4">Shift Scheduler</h1>
 
-      <button
-        onClick={assignShiftsEvenly}
-        className="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-      >
-        Assign Shifts Evenly
-      </button>
+      <div className="mb-4">
+        <input
+          type="text"
+          id="new-employee"
+          placeholder="Enter employee name"
+          className="border border-gray-300 rounded px-2 py-1 mr-2"
+        />
+        <button
+          onClick={() => {
+            const input = document.getElementById("new-employee") as HTMLInputElement;
+            addEmployee(input.value);
+            input.value = "";
+          }}
+          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+        >
+          Add Employee
+        </button>
+      </div>
 
       {/* Availability Table */}
       <h2 className="text-xl font-semibold mb-4">Employee Availability</h2>
@@ -157,17 +194,22 @@ export default function Home() {
               {daysOfWeek.map((day) => (
                 <td
                   key={day}
-                  className={`border border-gray-300 px-4 py-2 text-center cursor-pointer w-32 ${availability[employee][day] ? "bg-green-500" : "bg-red-500"}`}
+                  className={`border border-gray-300 px-4 py-2 text-center cursor-pointer w-32 ${availability[employee]?.[day] ? "bg-green-500" : "bg-red-500"}`}
                   onClick={() => handleAvailabilityChange(employee, day)}
                 >
-                  {availability[employee][day] ? "Available" : "Unavailable"}
+                  {availability[employee]?.[day] ? "Available" : "Unavailable"}
                 </td>
               ))}
             </tr>
           ))}
         </tbody>
       </table>
-
+      <button
+        onClick={assignShiftsEvenly}
+        className="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+      >
+        Assign Shifts Evenly
+      </button>
       {/* Shift Scheduler Table */}
       <h2 className="text-xl font-semibold mb-4">Shift Assignments</h2>
       <table className="table-auto border-collapse border border-gray-300 w-full">
