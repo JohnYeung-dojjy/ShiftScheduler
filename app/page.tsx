@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { assignShiftsEvenly } from "./utils/assignShiftsEvenly";
 
 interface Schedule {
   [location: string]: {
@@ -108,49 +109,6 @@ export default function Home() {
       };
       return updatedAvailability;
     });
-  };
-
-  const assignShiftsEvenly = () => {
-    const updatedSchedule: Schedule = { ...schedule };
-    const employeeShiftCount: { [employee: string]: number } = employees.reduce(
-      (acc, employee) => {
-        acc[employee] = 0;
-        return acc;
-      },
-      {} as { [employee: string]: number }
-    );
-
-    for (const day of daysOfWeek) {
-      for (const location of storeLocations) {
-        let assigned = false;
-        for (const employee of employees.sort(
-          (a, b) => employeeShiftCount[a] - employeeShiftCount[b]
-        )) {
-          if (
-            availability[employee][day] &&
-            !Object.values(updatedSchedule).some(
-              (store) => store[day] === employee
-            )
-          ) {
-            updatedSchedule[location][day] = employee;
-            employeeShiftCount[employee]++;
-            assigned = true;
-            break;
-          }
-        }
-
-        // If no employee is available, assign the least busy employee
-        if (!assigned) {
-          const leastBusyEmployee = employees.sort(
-            (a, b) => employeeShiftCount[a] - employeeShiftCount[b]
-          )[0];
-          updatedSchedule[location][day] = leastBusyEmployee;
-          employeeShiftCount[leastBusyEmployee]++;
-        }
-      }
-    }
-
-    setSchedule(updatedSchedule);
   };
 
   const distinctColors = [
@@ -280,7 +238,16 @@ export default function Home() {
         </tbody>
       </table>
       <button
-        onClick={assignShiftsEvenly}
+        onClick={() =>
+          assignShiftsEvenly(
+            employees,
+            daysOfWeek,
+            storeLocations,
+            availability,
+            schedule,
+            setSchedule
+          )
+        }
         className="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
       >
         Assign Shifts Evenly
