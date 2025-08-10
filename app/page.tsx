@@ -187,7 +187,7 @@ export default function Home() {
           </tr>
         </thead>
         <tbody>
-          {employees.map((employee) => (
+          {employees.sort().map((employee) => (
             <tr key={employee}>
               <td className="border border-gray-300 px-4 py-2 font-semibold w-32">
                 {employee}
