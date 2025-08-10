@@ -62,6 +62,10 @@ export default function Home() {
 
   const addEmployee = (employeeName: string) => {
     if (!employeeName || employees.includes(employeeName)) return;
+    if (employees.length >= 28) {
+      alert("Cannot add more than 28 employees.");
+      return;
+    }
     setEmployees((prev) => [...prev, employeeName]);
     setAvailability((prev) => ({
       ...prev,
@@ -149,6 +153,32 @@ export default function Home() {
     setSchedule(updatedSchedule);
   };
 
+  const distinctColors = [
+    "#FF5733", "#33FF57", "#3357FF", "#FF33A1", "#A133FF", "#33FFF5", "#F5FF33", "#FF8C33", "#8C33FF", "#33FF8C",
+    "#FFC300", "#DAF7A6", "#581845", "#900C3F", "#C70039", "#FF5733", "#FFC300", "#DAF7A6", "#581845", "#900C3F",
+    "#C70039", "#FF5733", "#FFC300", "#DAF7A6", "#581845", "#900C3F", "#C70039", "#FF5733"
+  ];
+
+  const employeeColors: { [key: string]: string } = employees.reduce((acc: { [key: string]: string }, employee, index) => {
+    acc[employee] = distinctColors[index % distinctColors.length];
+    return acc;
+  }, {});
+
+  /**
+   * Determines the appropriate text color (black or white) based on the brightness of the background color.
+   * This ensures that the text remains readable regardless of the background color.
+   * @param bgColor - The background color in hexadecimal format (e.g., "#FFFFFF").
+   * @returns The text color as a hexadecimal string ("#000000" for black or "#FFFFFF" for white).
+   */
+  const getTextColor = (bgColor: string): string => {
+    const hex = bgColor.replace("#", "");
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    return brightness > 128 ? "#000000" : "#FFFFFF";
+  };
+
   return (
     <div className="p-8">
       <h1 className="text-2xl font-bold mb-4">Shift Scheduler</h1>
@@ -189,7 +219,13 @@ export default function Home() {
         <tbody>
           {employees.sort().map((employee) => (
             <tr key={employee}>
-              <td className="border border-gray-300 px-4 py-2 font-semibold w-32">
+              <td
+                className="border border-gray-300 px-4 py-2 font-semibold w-32"
+                style={{
+                  backgroundColor: employeeColors[employee],
+                  color: getTextColor(employeeColors[employee]),
+                }}
+              >
                 {employee}
               </td>
               {daysOfWeek.map((day) => (
@@ -265,7 +301,14 @@ export default function Home() {
             <tr key={location}>
               <td className="border border-gray-300 px-4 py-2 font-semibold w-32">{location}</td>
               {daysOfWeek.map((day) => (
-                <td key={day} className="border border-gray-300 px-4 py-2 w-32">
+                <td
+                  key={day}
+                  className="border border-gray-300 px-4 py-2 w-32"
+                  style={{
+                    backgroundColor: schedule[location][day] ? employeeColors[schedule[location][day]] : "",
+                    color: schedule[location][day] ? getTextColor(employeeColors[schedule[location][day]]) : "",
+                  }}
+                >
                   <select
                     value={schedule[location][day]}
                     onChange={(e) => handleAssignShift(location, day, e.target.value)}
