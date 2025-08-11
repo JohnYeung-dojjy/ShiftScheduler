@@ -96,6 +96,26 @@ export default function Home() {
     });
   };
 
+  /**
+   * Toggles the availability of an employee for the entire week.
+   * If the employee is fully available, they will be marked unavailable for all days.
+   * If the employee is partially or fully unavailable, they will be marked available for all days.
+   */
+  const toggleEmployeeAvailability = (employee: string) => {
+    setAvailability((prevAvailability) => {
+      const updatedAvailability = {
+        ...prevAvailability,
+        [employee]: daysOfWeek.reduce((dayAcc, day) => {
+          dayAcc[day] = !Object.values(prevAvailability[employee]).every(
+            (available) => available
+          );
+          return dayAcc;
+        }, {} as { [day: string]: boolean }),
+      };
+      return updatedAvailability;
+    });
+  };
+
   const distinctColors = [
     "#FF5733", "#33FF57", "#3357FF", "#FF33A1", "#A133FF", "#33FFF5", "#F5FF33", "#FF8C33", "#8C33FF", "#33FF8C",
     "#FFC300", "#DAF7A6", "#581845", "#900C3F", "#C70039", "#FF5733", "#FFC300", "#DAF7A6", "#581845", "#900C3F",
@@ -175,22 +195,7 @@ export default function Home() {
               ))}
               <td className="border border-gray-300 px-4 py-2 text-center w-32">
                 <button
-                  onClick={() => {
-                    if (confirm(`Are you sure you want to toggle availability for ${employee} for the entire week?`)) {
-                      setAvailability((prevAvailability) => {
-                        const updatedAvailability = {
-                          ...prevAvailability,
-                          [employee]: daysOfWeek.reduce((dayAcc, day) => {
-                            dayAcc[day] = !Object.values(prevAvailability[employee]).every(
-                              (available) => available
-                            );
-                            return dayAcc;
-                          }, {} as { [day: string]: boolean }),
-                        };
-                        return updatedAvailability;
-                      });
-                    }
-                  }}
+                  onClick={() => toggleEmployeeAvailability(employee)}
                   className="px-1 py-0.5 bg-yellow-500 text-white text-sm rounded hover:bg-yellow-600"
                 >
                   Toggle
