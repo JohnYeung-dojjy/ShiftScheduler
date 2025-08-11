@@ -1,6 +1,23 @@
 import { Schedule, Availability } from "../types";
-import { MinHeap } from "./minHeap"; // Assume a MinHeap utility is available
 
+const canAssignEmployee = (
+    employee: string,
+    day: string,
+    updatedSchedule: Schedule,
+    availability: Availability
+  ): boolean => {
+  const isAvailableOnDay = availability[employee]?.[day];
+  const notAssignedToAnotherLocation = !Object.keys(updatedSchedule).some(
+    (loc) => updatedSchedule[loc][day] === employee
+  );
+
+  return (
+    isAvailableOnDay && notAssignedToAnotherLocation
+  );
+};
+async function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 export const assignShiftsEvenly = (
   employees: string[],
   daysOfWeek: string[],
@@ -16,52 +33,38 @@ export const assignShiftsEvenly = (
     return acc;
   }, {} as Schedule);
 
-  const employeeShiftCount: { [employee: string]: number } = employees.reduce(
-    (acc, employee) => {
-      acc[employee] = 0;
-      return acc;
-    },
-    {} as { [employee: string]: number }
-  );
-
-  const canAssignEmployee = (
-    employee: string,
-    day: string,
-    location: string,
-    updatedSchedule: Schedule,
-    availability: Availability
-  ): boolean => {
-    const isAvailableOnDay = availability[employee]?.[day];
-    const notAssignedToAnotherLocation = !Object.keys(updatedSchedule).some(
-      (loc) => updatedSchedule[loc][day] === employee
-    );
-
-    return (
-      isAvailableOnDay && notAssignedToAnotherLocation
-    );
-  };
-
-  const employeeHeap = new MinHeap<{ employee: string; shiftCount: number }>(
-    (a: { employee: string; shiftCount: number }, b: { employee: string; shiftCount: number }) => a.shiftCount - b.shiftCount
-  );
+  const employeeAvailabilityCount: { [employee: string]: number } = {};
 
   employees.forEach((employee) => {
-    const unavailableDays = Object.values(availability[employee] || {}).filter(
-      (available) => !available
+    const availableDays = Object.values(availability[employee] || {}).filter(
+      (available) => available
     ).length;
-    employeeHeap.insert({ employee, shiftCount: -unavailableDays });
+    employeeAvailabilityCount[employee] = availableDays;
   });
 
   for (const day of daysOfWeek) {
     for (const location of storeLocations) {
-      while (updatedSchedule[location][day] === "") { // While no employee is assigned
-        const { employee, shiftCount } = employeeHeap.extractMin();
-
-        if (canAssignEmployee(employee, day, location, updatedSchedule, availability)) {
+      let assigned = false;
+      // slower than min-Heap but easier to loop over each employee.
+      // data size is small so it should be fine.
+      const sortedEmployees = Object.entries(employeeAvailabilityCount)
+      .sort(([, availableDaysA], [, availableDaysB]) => availableDaysB - availableDaysA)
+      .map(([employee]) => employee);
+      for (const employee of sortedEmployees) {
+        if (
+          employeeAvailabilityCount[employee] > 0 &&
+          canAssignEmployee(employee, day, updatedSchedule, availability)
+        ) {
           updatedSchedule[location][day] = employee;
+          employeeAvailabilityCount[employee] -= 1;
+          assigned = true;
+          break;
         }
-        // Increase shift count even if employee is not available, so it won't re-appear at the top immediately
-        employeeHeap.insert({ employee, shiftCount: shiftCount + 1 });
+      }
+
+      if (!assigned) {
+        alert("Not enough employees to fill all shifts.");
+        return;
       }
     }
   }
