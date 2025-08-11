@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Head from "next/head";
+import Link from "next/link";
 
 export default function Employees() {
   const [employees, setEmployees] = useState<string[]>([]);
@@ -94,12 +95,12 @@ export default function Employees() {
       </ul>
 
       <div className="mt-4 flex justify-start">
-        <a
+        <Link
           href="/"
           className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
           Back to Home
-        </a>
+        </Link>
       </div>
     </div>
   );

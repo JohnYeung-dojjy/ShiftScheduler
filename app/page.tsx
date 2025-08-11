@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { assignShiftsEvenly } from "./utils/assignShiftsEvenly";
 import Head from "next/head";
+import Link from "next/link";
 
 interface Schedule {
   [location: string]: {
@@ -150,12 +151,12 @@ export default function Home() {
       <h1 className="text-2xl font-bold mb-4">Shift Scheduler</h1>
 
       <div className="mb-4">
-        <a
+        <Link
           href="/employees"
           className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
           Manage Employees
-        </a>
+        </Link>
       </div>
 
       {/* Availability Table */}
