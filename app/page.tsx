@@ -249,9 +249,9 @@ export default function Home() {
                     onChange={(e) => handleAssignShift(location, day, e.target.value)}
                     className="w-full border border-gray-300 rounded px-2 py-1"
                   >
-                    <option value="">-- Select Employee --</option>
+                    <option value="" style={{ color: "#000000" }}>-- Select Employee --</option>
                     {employees.map((employee) => (
-                      <option key={employee} value={employee}>
+                      <option key={employee} value={employee} style={{ color: "#000000" }}>
                         {employee}
                       </option>
                     ))}
