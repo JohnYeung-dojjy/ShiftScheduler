@@ -123,7 +123,7 @@ export default function Home() {
     "#C70039", "#FF5733", "#FFC300", "#DAF7A6", "#581845", "#900C3F", "#C70039", "#FF5733"
   ];
 
-  const employeeColors: { [key: string]: string } = employees.reduce((acc: { [key: string]: string }, employee, index) => {
+  const employeeColors: { [key: string]: string } = employees.sort().reduce((acc: { [key: string]: string }, employee, index) => {
     acc[employee] = distinctColors[index % distinctColors.length];
     return acc;
   }, {});
