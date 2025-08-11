@@ -25,6 +25,10 @@ export default function Employees() {
     localStorage.setItem("employees", JSON.stringify(employees));
   }, [employees]);
 
+  useEffect(() => {
+    localStorage.setItem("availability", JSON.stringify(availability));
+  }, [availability]);
+
   const addEmployee = (employeeName: string) => {
     if (!employeeName || employees.includes(employeeName)) return;
     if (employees.length >= 28) {
