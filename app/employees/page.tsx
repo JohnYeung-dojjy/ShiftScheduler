@@ -39,7 +39,15 @@ export default function Employees() {
     setEmployees((prev) => [...prev, employeeName]);
     setAvailability((prev) => ({
       ...prev,
-      [employeeName]: {},
+      [employeeName]: {
+        Monday: true,
+        Tuesday: true,
+        Wednesday: true,
+        Thursday: true,
+        Friday: true,
+        Saturday: true,
+        Sunday: true,
+      },
     }));
   };
 
