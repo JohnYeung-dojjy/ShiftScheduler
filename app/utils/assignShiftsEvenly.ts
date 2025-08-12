@@ -21,12 +21,12 @@ async function sleep(ms: number): Promise<void> {
 export const assignShiftsEvenly = (
   employees: string[],
   daysOfWeek: string[],
-  storeLocations: string[],
+  shifts: string[],
   availability: Availability,
   setSchedule: (schedule: Schedule) => void
 ) => {
-  const updatedSchedule: Schedule = storeLocations.reduce((acc, location) => {
-    acc[location] = daysOfWeek.reduce((dayAcc, day) => {
+  const updatedSchedule: Schedule = shifts.reduce((acc, shift) => {
+    acc[shift] = daysOfWeek.reduce((dayAcc, day) => {
       dayAcc[day] = ""; // No employee assigned initially
       return dayAcc;
     }, {} as { [day: string]: string });
@@ -43,7 +43,7 @@ export const assignShiftsEvenly = (
   });
 
   for (const day of daysOfWeek) {
-    for (const location of storeLocations) {
+    for (const shift of shifts) {
       let assigned = false;
       // slower than min-Heap but easier to loop over each employee.
       // data size is small so it should be fine.
@@ -55,7 +55,7 @@ export const assignShiftsEvenly = (
           employeeAvailabilityCount[employee] > 0 &&
           canAssignEmployee(employee, day, updatedSchedule, availability)
         ) {
-          updatedSchedule[location][day] = employee;
+          updatedSchedule[shift][day] = employee;
           employeeAvailabilityCount[employee] -= 1;
           assigned = true;
           break;

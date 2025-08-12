@@ -1,5 +1,5 @@
 export interface Schedule {
-  [location: string]: {
+  [shift: string]: {
     [day: string]: string;
   };
 }

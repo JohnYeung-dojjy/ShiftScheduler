@@ -1,21 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Schedule, Availability } from "./types";
 import { assignShiftsEvenly } from "./utils/assignShiftsEvenly";
 import Head from "next/head";
 import Link from "next/link";
-
-interface Schedule {
-  [location: string]: {
-    [day: string]: string;
-  };
-}
-
-interface Availability {
-  [employee: string]: {
-    [day: string]: boolean;
-  };
-}
 
 export default function Home() {
   const daysOfWeek: string[] = [
@@ -27,12 +16,12 @@ export default function Home() {
     "Saturday",
     "Sunday",
   ];
-  const storeLocations: string[] = ["Richmond", "Crystal Mall"];
+  const shifts: string[] = ["Richmond", "Crystal Mall"];
 
   const [employees, setEmployees] = useState<string[]>([]);
   const [schedule, setSchedule] = useState<Schedule>(
-    storeLocations.reduce((acc, location) => {
-      acc[location] = daysOfWeek.reduce((dayAcc, day) => {
+    shifts.reduce((acc, shift) => {
+      acc[shift] = daysOfWeek.reduce((dayAcc, day) => {
         dayAcc[day] = ""; // No employee assigned initially
         return dayAcc;
       }, {} as { [day: string]: string });
@@ -64,19 +53,19 @@ export default function Home() {
   }, [availability]);
 
   const handleAssignShift = (
-    location: string,
+    shift: string,
     day: string,
     employee: string
   ) => {
     setSchedule((prevSchedule) => {
       const updatedSchedule = { ...prevSchedule };
       // Ensure the employee is not already assigned to another store on the same day
-      for (const loc of storeLocations) {
-        if (updatedSchedule[loc][day] === employee) {
-          updatedSchedule[loc][day] = "";
+      for (const shift of shifts) {
+        if (updatedSchedule[shift][day] === employee) {
+          updatedSchedule[shift][day] = "";
         }
       }
-      updatedSchedule[location][day] = employee;
+      updatedSchedule[shift][day] = employee;
       return updatedSchedule;
     });
   };
@@ -211,7 +200,7 @@ export default function Home() {
           assignShiftsEvenly(
             employees,
             daysOfWeek,
-            storeLocations,
+            shifts,
             availability,
             setSchedule
           )
@@ -232,21 +221,21 @@ export default function Home() {
           </tr>
         </thead>
         <tbody>
-          {storeLocations.map((location) => (
-            <tr key={location}>
-              <td className="border border-gray-300 px-4 py-2 font-semibold w-32">{location}</td>
+          {shifts.map((shift) => (
+            <tr key={shift}>
+              <td className="border border-gray-300 px-4 py-2 font-semibold w-32">{shift}</td>
               {daysOfWeek.map((day) => (
                 <td
                   key={day}
                   className="border border-gray-300 px-4 py-2 w-32"
                   style={{
-                    backgroundColor: schedule[location][day] ? employeeColors[schedule[location][day]] : "",
-                    color: schedule[location][day] ? getTextColor(employeeColors[schedule[location][day]]) : "",
+                    backgroundColor: schedule[shift][day] ? employeeColors[schedule[shift][day]] : "",
+                    color: schedule[shift][day] ? getTextColor(employeeColors[schedule[shift][day]]) : "",
                   }}
                 >
                   <select
-                    value={schedule[location][day]}
-                    onChange={(e) => handleAssignShift(location, day, e.target.value)}
+                    value={schedule[shift][day]}
+                    onChange={(e) => handleAssignShift(shift, day, e.target.value)}
                     className="w-full border border-gray-300 rounded px-2 py-1"
                   >
                     <option value="" style={{ color: "#000000" }}>-- Select Employee --</option>
