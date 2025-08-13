@@ -4,9 +4,10 @@ const canAssignEmployee = (
     employee: string,
     day: string,
     updatedSchedule: Schedule,
-    availability: Availability
+    availability: Availability,
+    shift: string // shift is now passed as an argument
   ): boolean => {
-  const isAvailableOnDay = availability[employee]?.[day];
+  const isAvailableOnDay = availability[employee]?.[shift]?.[day];
   const notAssignedToAnotherLocation = !Object.keys(updatedSchedule).some(
     (loc) => updatedSchedule[loc][day] === employee
   );
@@ -36,27 +37,33 @@ export const assignShiftsEvenly = (
   const employeeAvailabilityCount: { [employee: string]: number } = {};
 
   employees.forEach((employee) => {
-    const availableDays = Object.values(availability[employee] || {}).filter(
-      (available) => available
-    ).length;
-    employeeAvailabilityCount[employee] = availableDays;
+    shifts.forEach((shift) => {
+      const availableDays = Object.values(availability[employee]?.[shift] || {}).filter(
+        (available) => available
+      ).length;
+      employeeAvailabilityCount[employee] = (employeeAvailabilityCount[employee] || 0) + availableDays;
+    });
   });
+
+  const employeeShiftCount: { [employee: string]: number } = employees.reduce((acc, employee) => {
+    acc[employee] = 0; // Initialize shift count to 0 for each employee
+    return acc;
+  }, {} as { [employee: string]: number });
 
   for (const day of daysOfWeek) {
     for (const shift of shifts) {
       let assigned = false;
-      // slower than min-Heap but easier to loop over each employee.
-      // data size is small so it should be fine.
-      const sortedEmployees = Object.entries(employeeAvailabilityCount)
-      .sort(([, availableDaysA], [, availableDaysB]) => availableDaysB - availableDaysA)
-      .map(([employee]) => employee);
+
+      const sortedEmployees = Object.entries(employeeShiftCount)
+        .sort(([, shiftCountA], [, shiftCountB]) => shiftCountA - shiftCountB)
+        .map(([employee]) => employee);
+
       for (const employee of sortedEmployees) {
         if (
-          employeeAvailabilityCount[employee] > 0 &&
-          canAssignEmployee(employee, day, updatedSchedule, availability)
+          canAssignEmployee(employee, day, updatedSchedule, availability, shift)
         ) {
           updatedSchedule[shift][day] = employee;
-          employeeAvailabilityCount[employee] -= 1;
+          employeeShiftCount[employee] += 1; // Increment shift count for the assigned employee
           assigned = true;
           break;
         }

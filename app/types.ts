@@ -6,6 +6,6 @@ export interface Schedule {
 
 export interface Availability {
   [employee: string]: {
-    [day: string]: boolean;
+    [shift: string]: { [day: string]: boolean };
   };
 }

@@ -72,6 +72,7 @@ export default function Home() {
 
   const handleAvailabilityChange = (
     employee: string,
+    shift: string,
     day: string
   ) => {
     setAvailability((prevAvailability) => {
@@ -79,7 +80,10 @@ export default function Home() {
         ...prevAvailability,
         [employee]: {
           ...prevAvailability[employee],
-          [day]: !prevAvailability[employee][day],
+          [shift]: {
+            ...prevAvailability[employee]?.[shift],
+            [day]: !prevAvailability[employee]?.[shift]?.[day],
+          },
         },
       };
       return updatedAvailability;
@@ -95,12 +99,36 @@ export default function Home() {
     setAvailability((prevAvailability) => {
       const updatedAvailability = {
         ...prevAvailability,
-        [employee]: daysOfWeek.reduce((dayAcc, day) => {
-          dayAcc[day] = !Object.values(prevAvailability[employee]).every(
-            (available) => available
-          );
-          return dayAcc;
-        }, {} as { [day: string]: boolean }),
+        [employee]: shifts.reduce((shiftAcc, shift) => {
+          shiftAcc[shift] = daysOfWeek.reduce((dayAcc, day) => {
+            dayAcc[day] = !Object.values(
+              prevAvailability[employee]?.[shift] || {}
+            ).every((available) => available);
+            return dayAcc;
+          }, {} as { [day: string]: boolean });
+          return shiftAcc;
+        }, {} as { [shift: string]: { [day: string]: boolean } }),
+      };
+      return updatedAvailability;
+    });
+  };
+
+  /**
+   * Toggles the availability of a specific shift for an employee.
+  */
+  const toggleShiftAvailability = (employee: string, shift: string) => {
+    setAvailability((prevAvailability) => {
+      const updatedAvailability = {
+        ...prevAvailability,
+        [employee]: {
+          ...prevAvailability[employee],
+          [shift]: daysOfWeek.reduce((dayAcc, day) => {
+            dayAcc[day] = !Object.values(prevAvailability[employee]?.[shift] || {}).every(
+              (available) => available
+            );
+            return dayAcc;
+          }, {} as { [day: string]: boolean }),
+        },
       };
       return updatedAvailability;
     });
@@ -154,11 +182,14 @@ export default function Home() {
         <thead>
           <tr>
             <th className="border border-gray-300 px-4 py-2 w-32">Employee</th>
-            {daysOfWeek.map((day) => (
-              <th key={day} className="border border-gray-300 px-4 py-2 w-32">
-                {day}
-              </th>
-            ))}
+            <th className="border border-gray-300 px-4 py-2 w-32">Shift</th>
+            {
+              daysOfWeek.map((day) => (
+                <th key={`${day}`} className="border border-gray-300 px-4 py-2 w-32">
+                  {day}
+                </th>
+              )
+            )}
             <th className="border border-gray-300 px-4 py-2 w-32">Actions</th>
           </tr>
         </thead>
@@ -174,22 +205,37 @@ export default function Home() {
               >
                 {employee}
               </td>
-              {daysOfWeek.map((day) => (
-                <td
-                  key={day}
-                  className={`border border-gray-300 px-4 py-2 text-center cursor-pointer w-32 ${availability[employee]?.[day] ? "bg-green-500" : "bg-red-500"}`}
-                  onClick={() => handleAvailabilityChange(employee, day)}
-                >
-                  {availability[employee]?.[day] ? "Available" : "Unavailable"}
-                </td>
-              ))}
-              <td className="border border-gray-300 px-4 py-2 text-center w-32">
-                <button
-                  onClick={() => toggleEmployeeAvailability(employee)}
-                  className="px-1 py-0.5 bg-yellow-500 text-white text-sm rounded hover:bg-yellow-600"
-                >
-                  Toggle
-                </button>
+              <td colSpan={daysOfWeek.length + 2}>
+                <table className="table-auto border-collapse border border-gray-300 w-full">
+                  <tbody>
+                    {shifts.map((shift) => (
+                      <tr key={`${employee}-${shift}`}>
+                        <td className="border border-gray-300 px-4 py-2 font-semibold w-32">
+                          {shift}
+                        </td>
+                        {daysOfWeek.map((day) => (
+                          <td
+                            key={`${employee}-${shift}-${day}`}
+                            className={`border border-gray-300 px-4 py-2 text-center cursor-pointer w-32 ${availability[employee]?.[shift]?.[day] ? "bg-green-500" : "bg-red-500"}`}
+                            onClick={() => handleAvailabilityChange(employee, shift, day)}
+                          >
+                            {availability[employee]?.[shift]?.[day] ? "✓" : ""}
+                          </td>
+                        ))}
+                        <td className="border border-gray-300 px-4 py-2 w-32">
+                          <button
+                            onClick={() => toggleShiftAvailability(employee, shift)}
+                            className="px-2 py-1 bg-yellow-500 text-white text-sm rounded hover:bg-yellow-600"
+                          >
+                            Toggle Shift
+                          </button>
+                        </td>
+                        </tr>
+                        )
+                      )
+                    }
+                  </tbody>
+                </table>
               </td>
             </tr>
           ))}
