@@ -130,13 +130,30 @@ export default function Configurations() {
       <Head>
         <title>Configurations</title>
       </Head>
-      <div className="mt-4 flex justify-end">
-        <Link
-          href="/"
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          Back to Home
-        </Link>
+      <div className="grid grid-cols-2">
+        <div className="col-span-1 mt-4 flex justify-start">
+          <Link
+            href="/"
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Back to Home
+          </Link>
+        </div>
+        <div className="col-span-1 mt-4 flex justify-end">
+          <button
+            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+            onClick={() => {
+              if (confirm("Are you sure you want to delete all data? This action cannot be undone.")) {
+                localStorage.clear();
+                setEmployees([]);
+                setShifts([]);
+                setAvailability({});
+              }
+            }}
+          >
+            Delete All Data
+          </button>
+        </div>
       </div>
       <h1 className="text-2xl font-bold mb-4">Manage Employees</h1>
 
