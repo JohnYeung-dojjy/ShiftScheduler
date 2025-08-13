@@ -16,7 +16,7 @@ export default function Home() {
     "Saturday",
     "Sunday",
   ];
-  const shifts: string[] = ["Richmond", "Crystal Mall"];
+  const [shifts, setShifts] = useState<string[]>([]);
 
   const [employees, setEmployees] = useState<string[]>([]);
   const [schedule, setSchedule] = useState<Schedule>(
@@ -32,6 +32,11 @@ export default function Home() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
+      const storedShifts = localStorage.getItem("shifts");
+      if (storedShifts) {
+        setShifts(JSON.parse(storedShifts));
+      }
+
       const storedEmployees = localStorage.getItem("employees");
       if (storedEmployees) {
         setEmployees(JSON.parse(storedEmployees));
@@ -275,12 +280,12 @@ export default function Home() {
                   key={day}
                   className="border border-gray-300 px-4 py-2 w-32"
                   style={{
-                    backgroundColor: schedule[shift][day] ? employeeColors[schedule[shift][day]] : "",
-                    color: schedule[shift][day] ? getTextColor(employeeColors[schedule[shift][day]]) : "",
+                    backgroundColor: schedule[shift]?.[day] ? employeeColors[schedule[shift]?.[day]] : "",
+                    color: schedule[shift]?.[day] ? getTextColor(employeeColors[schedule[shift]?.[day]]) : "",
                   }}
                 >
                   <select
-                    value={schedule[shift][day]}
+                    value={schedule[shift]?.[day]}
                     onChange={(e) => handleAssignShift(shift, day, e.target.value)}
                     className="w-full border border-gray-300 rounded px-2 py-1"
                   >
