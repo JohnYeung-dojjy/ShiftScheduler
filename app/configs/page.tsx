@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Head from "next/head";
 import Link from "next/link";
 
-export default function Employees() {
+export default function Configurations() {
   const [employees, setEmployees] = useState<string[]>([]);
   const [availability, setAvailability] = useState<Record<string, Record<string, boolean>>>({});
 
@@ -65,8 +65,16 @@ export default function Employees() {
   return (
     <div className="p-8">
       <Head>
-        <title>Manage Employees</title>
+        <title>Configurations</title>
       </Head>
+      <div className="mt-4 flex justify-end">
+        <Link
+          href="/"
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Back to Home
+        </Link>
+      </div>
       <h1 className="text-2xl font-bold mb-4">Manage Employees</h1>
 
       <div className="mb-4">
@@ -101,15 +109,6 @@ export default function Employees() {
           </li>
         ))}
       </ul>
-
-      <div className="mt-4 flex justify-start">
-        <Link
-          href="/"
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          Back to Home
-        </Link>
-      </div>
     </div>
   );
 }
