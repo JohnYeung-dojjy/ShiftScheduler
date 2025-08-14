@@ -52,8 +52,6 @@ export const assignShiftsEvenly = (
 
   for (const day of daysOfWeek) {
     for (const shift of shifts) {
-      let assigned = false;
-
       const sortedEmployees = Object.entries(employeeShiftCount)
         .sort(([, shiftCountA], [, shiftCountB]) => shiftCountA - shiftCountB)
         .map(([employee]) => employee);
@@ -64,14 +62,8 @@ export const assignShiftsEvenly = (
         ) {
           updatedSchedule[shift][day] = employee;
           employeeShiftCount[employee] += 1; // Increment shift count for the assigned employee
-          assigned = true;
           break;
         }
-      }
-
-      if (!assigned) {
-        alert("Not enough employees to fill all shifts.");
-        return;
       }
     }
   }
