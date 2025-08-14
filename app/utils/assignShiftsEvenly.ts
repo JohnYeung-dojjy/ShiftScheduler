@@ -50,6 +50,8 @@ export const assignShiftsEvenly = (
     return acc;
   }, {} as { [employee: string]: number });
 
+  let unassignableShifts = 0;
+
   for (const day of daysOfWeek) {
     for (const shift of shifts) {
       const sortedEmployees = Object.entries(employeeShiftCount)
@@ -65,7 +67,14 @@ export const assignShiftsEvenly = (
           break;
         }
       }
+      if (updatedSchedule[shift][day] === "") {
+        unassignableShifts++;
+      }
     }
+  }
+  // TODO: Rearrange shifts for that day if unassignable shifts exist, maybe someone was available but has already been assigned to another shift
+  if (unassignableShifts > 0) {
+    alert(`Warning: ${unassignableShifts} shifts could not be assigned due to availability constraints, please check if you could re-arrange shifts for that day.`);
   }
 
   setSchedule(updatedSchedule);
